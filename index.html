@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reddingtondev</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Floating particles container -->
+<!-- <div id="particles-js"></div> -->
+
+<!-- Hero Section -->
+<header class="hero">
+  <div class="hero-left">
+    <h1>Hi, I'm <span>Reddingtondev</span></h1>
+    <h2 class="typing"></h2>
+    <p>I build modern, responsive and visually stunning websites, turning traffic into clients.</p>
+    <button class="btn" onclick="location.href='portfolio.html'">View My Works</button>
+  </div>
+  <div class="pulse-ball">
+    <img src="assets/my-photo.jpg" alt="Profile">
+  </div>
+</section>
+</header>
+
+<!-- About Section -->
+<section class="about reveal">
+  <div class="glass-panel">
+    <h2>About Me</h2>
+    <p>I’m a nurse who has passion for the online space and passion for creating value. So i got interested in web development because i found out most firms pay heavily, yet get sub-standard sites making no difference and impact to their business.<p>I am a web Developer creating visually stunning websites that convert visitors into real clients.</p></p>
+  </div>
+</section>
+
+<!-- Skills Section -->
+<section class="skills reveal">
+  <div class="glass-panel">
+    <h2>Skills</h2>
+    <div class="skill-grid">
+      <span>HTML</span><span>CSS</span><span>JavaScript</span>
+      <span>UI/UX</span><span>Responsive Design</span><span>Animations</span>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="services reveal">
+  <div class="glass-panel">
+    <h2>Services</h2>
+    <div class="card-grid">
+      <div class="card">Website Design</div>
+      <div class="card">Frontend Development</div>
+      <div class="card">Backend Development</div>
+      <div class="card">UI/UX Design</div>
+      <div class="card">Website Redesign</div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact reveal">
+  <div class="glass-panel contact-panel">
+    <h2>Contact Me</h2>
+    <p>Email: <a href="mailto:oparahraymond72@gmail.com" target="_blank">oparahraymond72@gmail.com</a></p>
+    <p>whatsapp:
+      <a class="whatsapp" href="https://wa.me/2348104923775" target="_blank">08104923775</a>
+    </p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script src="script.js"></script>
+<script>
+/* Initialize particles for homepage */
+particlesJS('particles-js',{
+  "particles": {
+    "number": { "value": 60 },
+    "color": { "value": ["#6c63ff","#00f5ff"] },
+    "shape": { "type": "circle" },
+    "opacity": { "value":0.4 },
+    "size": { "value":3 },
+    "move": { "enable":true,"speed":1.5 }
+  },
+  "interactivity": {
+    "events": { "onhover": { "enable": true, "mode":"repulse" } }
+  }
+});
+</script>
+</body>
+</html>
+
