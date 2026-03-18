@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Projects | Reddington Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        primary: '#0a0a0a',
+                        secondary: '#1a1a1a',
+                        accent: '#c9a96e',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-container" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-serif font-bold tracking-tighter hover:text-accent transition-colors">R.</a>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="index.html" class="nav-link text-sm uppercase tracking-widest text-gray-300 hover:text-white transition-colors">Home</a>
+                <a href="index.html#about" class="nav-link text-sm uppercase tracking-widest text-gray-300 hover:text-white transition-colors">About</a>
+                <a href="index.html#services" class="nav-link text-sm uppercase tracking-widest text-gray-300 hover:text-white transition-colors">Services</a>
+                <a href="index.html#contact" class="magnetic-btn px-6 py-3 border border-accent text-accent hover:bg-accent hover:text-primary transition-all duration-300 text-sm uppercase tracking-widest">Let's Talk</a>
+            </div>
+            <button class="hamburger md:hidden relative z-10 focus:outline-none" id="menuBtn">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <button class="absolute top-6 right-6 text-white" id="closeMenu">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <a href="index.html" class="mobile-link text-3xl font-serif text-white hover:text-accent transition-colors">Home</a>
+            <a href="index.html#about" class="mobile-link text-3xl font-serif text-white hover:text-accent transition-colors">About</a>
+            <a href="index.html#services" class="mobile-link text-3xl font-serif text-white hover:text-accent transition-colors">Services</a>
+            <a href="index.html#contact" class="mobile-link text-3xl font-serif text-accent">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="portfolio-header">
+        <div class="max-w-7xl mx-auto px-6 pt-32 pb-20">
+            <p class="text-accent uppercase tracking-widest text-sm mb-4 reveal-text">Portfolio</p>
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-serif font-bold mb-6 reveal-text">All Projects</h1>
+            <p class="text-gray-400 text-lg max-w-2xl reveal-text">A curated collection of my best work. Each project represents a unique challenge and innovative solution.</p>
+        </div>
+    </header>
+
+    <!-- Filter Buttons -->
+    <div class="max-w-7xl mx-auto px-6 mb-12">
+        <div class="flex flex-wrap gap-4 justify-center md:justify-start reveal-text">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="web">Web Development</button>
+            <button class="filter-btn" data-filter="app">Applications</button>
+            <button class="filter-btn" data-filter="design">UI/UX Design</button>
+        </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <section class="max-w-7xl mx-auto px-6 pb-32">
+        <div class="projects-grid">
+            
+            <!-- PROJECT 1 -->
+            <article class="project-item" data-category="web">
+                <a href="https://difeco.vercel.app" target="_blank" class="project-card-portfolio">
+                    <div class="project-image-wrapper">
+                        <img src="assets/project1.jpg" alt="Project 1" class="project-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect width=%22800%22 height=%22600%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2220%22%3EProject 1 Image%3C/text%3E%3C/svg%3E'">
+                        <div class="project-overlay">
+                            <span class="view-project">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-category">Web Development</span>
+                        <h3 class="project-title">Difeco Deluxe</h3>
+                        <p class="project-description">Elegance Redefined; Men and Women luxury Store</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Html</span>
+                            <span class="tech-tag">Css</span>
+                            <span class="tech-tag">Javascript</span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+            <!-- PROJECT 2 -->
+            <article class="project-item" data-category="app">
+                <a href="https://in-kspector.vercel.app" target="_blank" class="project-card-portfolio">
+                    <div class="project-image-wrapper">
+                        <img src="assets/project2.jpg" alt="Project 2" class="project-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect width=%22800%22 height=%22600%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2220%22%3EProject 2 Image%3C/text%3E%3C/svg%3E'">
+                        <div class="project-overlay">
+                            <span class="view-project">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-category">Application</span>
+                        <h3 class="project-title">THE INK-spector</h3>
+                        <p class="project-description">Helping Experts Turn Ideas into Finished Nonfiction Books</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Html</span>
+                            <span class="tech-tag">Css</span>
+                            <span class="tech-tag">Javascript</span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+            <!-- PROJECT 3 -->
+            <article class="project-item" data-category="design">
+                <a href="https://owerri-bole.vercel.app" target="_blank" class="project-card-portfolio">
+                    <div class="project-image-wrapper">
+                        <img src="assets/project3.jpg" alt="Project 3" class="project-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect width=%22800%22 height=%22600%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2220%22%3EProject 3 Image%3C/text%3E%3C/svg%3E'">
+                        <div class="project-overlay">
+                            <span class="view-project">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-category">UI/UX Design</span>
+                        <h3 class="project-title">owerri-bole</h3>
+                        <p class="project-description">Serving amazing local dishes providing online order placing and tracking of order delivery</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Html</span>
+                            <span class="tech-tag">Css</span>
+                            <span class="tech-tag">Javascript</span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+            <!-- PROJECT 4 -->
+            <article class="project-item" data-category="web">
+                <a href="https://casablanca-sage.vercel.app" target="_blank" class="project-card-portfolio">
+                    <div class="project-image-wrapper">
+                        <img src="assets/project4.jpg" alt="Project 4" class="project-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect width=%22800%22 height=%22600%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2220%22%3EProject 4 Image%3C/text%3E%3C/svg%3E'">
+                        <div class="project-overlay">
+                            <span class="view-project">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-category">Web Development</span>
+                        <h3 class="project-title">Casablanca</h3>
+                        <p class="project-description">Luxury Dining Meets Nightlife Energy</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Html</span>
+                            <span class="tech-tag">css</span>
+                            <span class="tech-tag">JavaScript</span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+            <!-- PROJECT 5 -->
+            <article class="project-item" data-category="app">
+                <a href="https://my-portfolio-ashen-psi-94.vercel.app" target="_blank" class="project-card-portfolio">
+                    <div class="project-image-wrapper">
+                        <img src="assets/project5.jpg" alt="Project 5" class="project-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect width=%22800%22 height=%22600%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2220%22%3EProject 5 Image%3C/text%3E%3C/svg%3E'">
+                        <div class="project-overlay">
+                            <span class="view-project">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-category">Application</span>
+                        <h3 class="project-title">Btherapy</h3>
+                        <p class="project-description">Therapy sessions and relationship coaching, also free and paid courses for personal growth</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Html</span>
+                            <span class="tech-tag">css</span>
+                            <span class="tech-tag">JavaScript</span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+            <!-- PROJECT 6 -->
+            <article class="project-item" data-category="design">
+                <a href="https://tech-revivalist.vercel.app" target="_blank" class="project-card-portfolio">
+                    <div class="project-image-wrapper">
+                        <img src="assets/project6.jpg" alt="Project 6" class="project-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect width=%22800%22 height=%22600%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2220%22%3EProject 6 Image%3C/text%3E%3C/svg%3E'">
+                        <div class="project-overlay">
+                            <span class="view-project">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-category">UI/UX Design</span>
+                        <h3 class="project-title">Tech-Revivalist</h3>
+                        <p class="project-description">The tech Revivalist, Changing the narrative of tech. Designs that bring sales</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Html</span>
+                            <span class="tech-tag">Css</span>
+                            <span class="tech-tag">Javascript</span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+             <!-- PROJECT 7 -->
+            <article class="project-item" data-category="design">
+                <a href="https://gha-theta.vercel.app" target="_blank" class="project-card-portfolio">
+                    <div class="project-image-wrapper">
+                        <img src="assets/project7.jpg" alt="Project 6" class="project-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect width=%22800%22 height=%22600%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2220%22%3EProject 6 Image%3C/text%3E%3C/svg%3E'">
+                        <div class="project-overlay">
+                            <span class="view-project">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <span class="project-category">UI/UX Design</span>
+                        <h3 class="project-title">Gh Academy</h3>
+                        <p class="project-description">Determined to succeed;raising Godly intelligent soldiers</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Html</span>
+                            <span class="tech-tag">Css</span>
+                            <span class="tech-tag">Javascript</span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 border-t border-white/10 bg-primary">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-500 text-sm">© 2026 Reddington. All rights reserved.</p>
+            <a href="index.html" class="text-accent hover:text-white transition-colors text-sm">Back to Home</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
