@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Reddington - Full-Stack Developer & UI Designer crafting high-performance digital experiences">
+    <title>Reddington | Full-Stack Developer & UI Designer</title>
+
+    <!-- Preconnect to critical domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+    <!-- Tailwind CSS v3 (Stable) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP (deferred) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+    <!-- Font Awesome (async) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+
+    <!-- Modern Fonts: Space Grotesk (Headings) + Space Grotesk Body -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"></noscript>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0a0a0a',
+                        secondary: '#1a1a1a',
+                        accent: '#c9a96e',
+                        'accent-light': '#e0c090',
+                        muted: '#888888',
+                    },
+                    letterSpacing: {
+                        'tighter': '-0.05em',
+                        'tight': '-0.025em',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0a0a0a; color: #ffffff; overflow-x: hidden; font-family: 'Space Grotesk', sans-serif; }
+        body.menu-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Preloader Styles */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+        }
+        .preloader.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+        .preloader-text {
+            font-size: clamp(3rem, 15vw, 12rem);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            color: #ffffff;
+            overflow: hidden;
+            line-height: 1;
+        }
+        .preloader-text span {
+            display: inline-block;
+            transform: translateY(100%);
+        }
+        .preloader-line {
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c9a96e, transparent);
+            position: relative;
+            overflow: hidden;
+        }
+        .preloader-line::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .preloader-counter {
+            font-size: 0.875rem;
+            letter-spacing: 0.2em;
+            color: #c9a96e;
+            font-weight: 500;
+        }
+
+        /* Grain overlay */
+        .grain-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+
+        /* Navigation */
+        .nav-container { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.5rem 1.5rem; transition: all 0.3s ease; transform: translateY(-100%); }
+        .nav-container.visible { transform: translateY(0); }
+        .nav-container.scrolled { background-color: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+
+        /* Hero */
+        .hero-section { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-top: 100px; z-index: 10; }
+        .hero-content { position: relative; z-index: 10; }
+        .hero-title { font-weight: 700; letter-spacing: -0.04em; line-height: 0.95; }
+        .hero-title span { display: block; overflow: hidden; }
+        .hero-title span span { display: inline-block; transform: translateY(100%); }
+
+        /* Other components */
+        .line-draw { width: 0; height: 1px; background: linear-gradient(90deg, transparent, #c9a96e, transparent); }
+        .magnetic-btn { transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
+        .project-card { transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .project-card:hover { transform: translateY(-10px); }
+        .project-card:hover .project-image { transform: scale(1.05); }
+        .skill-tag { transition: all 0.3s ease; }
+        .skill-tag:hover { background-color: #c9a96e; color: #0a0a0a; transform: translateY(-2px); }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: #c9a96e; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Cursor */
+        .cursor-dot, .cursor-outline { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none; }
+        .cursor-dot { width: 5px; height: 5px; background-color: #c9a96e; }
+        .cursor-outline { width: 30px; height: 30px; border: 1px solid rgba(201, 169, 110, 0.5); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+        .cursor-outline.hover { width: 60px; height: 60px; background-color: rgba(201, 169, 110, 0.1); border-color: transparent; }
+        @media (max-width: 768px) { .cursor-dot, .cursor-outline { display: none; } .hero-section { padding-top: 80px; } }
+
+        /* Text gradient */
+        .text-gradient { background: linear-gradient(135deg, #ffffff 0%, #c9a96e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .parallax-bg { will-change: transform; }
+
+        /* Mobile menu */
+        .mobile-menu { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            height: 100dvh; /* Dynamic viewport height for mobile */
+            background-color: #0a0a0a; 
+            z-index: 200; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 2rem; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.3s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mobile-menu.active { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+        .mobile-menu-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            min-height: 100%;
+            padding: 2rem;
+            width: 100%;
+        }
+        .hamburger span { display: block; width: 24px; height: 2px; background-color: white; margin: 5px 0; transition: all 0.3s ease; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* Images */
+        .about-image { width: 100%; height: 100%; object-fit: cover; }
+        .project-image-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+        .project-card:hover .project-image-img { transform: scale(1.05); }
+        .project-card:hover .view-btn { transform: translateY(-2px); }
+
+        /* Selection */
+        ::selection { background-color: #c9a96e; color: #0a0a0a; }
+    </style>
+<!-- <base target="_blank"> -->
+</head>
+<body class="antialiased">
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-text" id="preloader-text">
+            <span>R</span><span>E</span><span>D</span><span>D</span><span>I</span><span>N</span><span>G</span><span>T</span><span>O</span><span>N</span>
+        </div>
+        <div class="preloader-line" id="preloader-line" style="width: 0; max-width: 300px;"></div>
+        <div class="preloader-counter" id="preloader-counter">00%</div>
+    </div>
+
+    <div class="grain-overlay"></div>
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-container" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold tracking-tighter hover:text-accent transition-colors relative z-10" style="font-family: 'Space Grotesk', sans-serif;">R.</a>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#work" class="nav-link text-sm uppercase tracking-widest text-gray-300 hover:text-white transition-colors font-medium">Work</a>
+                <a href="#about" class="nav-link text-sm uppercase tracking-widest text-gray-300 hover:text-white transition-colors font-medium">About</a>
+                <a href="#services" class="nav-link text-sm uppercase tracking-widest text-gray-300 hover:text-white transition-colors font-medium">Services</a>
+                <a href="#contact" class="magnetic-btn px-6 py-3 border border-accent text-accent hover:bg-accent hover:text-primary transition-all duration-300 text-sm uppercase tracking-widest font-semibold">Let's Talk</a>
+            </div>
+            <button class="hamburger md:hidden relative z-10 focus:outline-none" id="menuBtn" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <button class="absolute top-6 right-6 text-white z-10" id="closeMenu" aria-label="Close menu">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="mobile-menu-content">
+                <a href="#work" class="mobile-link text-4xl font-bold text-white hover:text-accent transition-colors tracking-tight">Work</a>
+                <a href="#about" class="mobile-link text-4xl font-bold text-white hover:text-accent transition-colors tracking-tight">About</a>
+                <a href="#services" class="mobile-link text-4xl font-bold text-white hover:text-accent transition-colors tracking-tight">Services</a>
+                <a href="#contact" class="mobile-link text-4xl font-bold text-accent tracking-tight">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section px-6">
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-accent/5 rounded-full blur-3xl parallax-bg" data-speed="0.5"></div>
+            <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl parallax-bg" data-speed="-0.5"></div>
+        </div>
+        <div class="hero-content max-w-7xl mx-auto text-center w-full">
+            <div class="mb-6 overflow-hidden">
+                <p class="hero-subtitle text-accent uppercase tracking-[0.3em] text-sm md:text-base opacity-0 translate-y-full font-medium">Full-Stack Developer & UI Designer</p>
+            </div>
+            <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl xl:text-9xl mb-8" style="font-family: 'Space Grotesk', sans-serif;">
+                <span><span id="hero-line1">Crafting Digital</span></span>
+                <span><span class="text-gradient" id="hero-line2">Experiences</span></span>
+                <span><span id="hero-line3">That Convert</span></span>
+            </h1>
+            <div class="hero-desc max-w-2xl mx-auto mb-12 opacity-0" id="hero-desc">
+                <p class="text-lg md:text-xl text-gray-400 leading-relaxed font-light">I build visually stunning, high-performance websites that transform visitors into loyal clients. Specializing in React, Node.js, and conversion-focused design.</p>
+            </div>
+            <div class="hero-cta flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0 scale-90" id="hero-cta">
+                <a href="#work" class="magnetic-btn group relative px-8 py-4 bg-accent text-primary font-semibold overflow-hidden inline-flex items-center gap-2 tracking-tight">
+                    <span class="relative z-10">View My Work</span>
+                    <svg class="w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    <div class="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                </a>
+                <a href="#contact" class="magnetic-btn px-8 py-4 border border-white/20 hover:border-accent hover:text-accent transition-all duration-300 font-medium tracking-tight">Get in Touch</a>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-32 px-6 bg-secondary/30 relative z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative">
+                    <div class="aspect-[3/4] rounded-lg overflow-hidden relative bg-gray-800">
+                        <img src="assets/about1.jpg" alt="About Photo" class="about-image" width="600" height="800" loading="lazy" decoding="async" onerror="this.style.display='none'; this.parentElement.querySelector('.fallback').style.display='flex';">
+                        <div class="fallback absolute inset-0 flex items-center justify-center hidden">
+                            <div class="text-center">
+                                <div class="w-32 h-32 mx-auto mb-6 rounded-full bg-accent/10 flex items-center justify-center border-2 border-accent/30">
+                                    <span class="text-5xl font-bold text-accent" style="font-family: 'Space Grotesk', sans-serif;">R</span>
+                                </div>
+                                <p class="text-gray-400 text-sm">Add Photo: assets/images/about-photo.jpg</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 w-48 h-48 border border-accent/20 rounded-lg -z-10"></div>
+                    <div class="absolute -top-6 -left-6 w-48 h-48 bg-accent/5 rounded-lg -z-10"></div>
+                </div>
+
+                <div>
+                    <p class="text-accent uppercase tracking-widest text-sm mb-4 font-semibold">About Me</p>
+                    <h2 class="text-4xl md:text-5xl font-bold mb-8 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Building Digital Products That Matter</h2>
+                    <div class="space-y-6 text-gray-400 text-lg leading-relaxed mb-10 font-light">
+                        <p>I'm a goal-oriented developer with a passion for creating value in the online space. My journey began when I noticed a gap in the market—businesses paying premium prices for subpar websites that failed to convert visitors into customers.</p>
+                        <p>Today, I specialize in crafting visually stunning, high-performance web applications using modern technologies. My approach combines aesthetic excellence with data-driven conversion optimization.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">React</span>
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">Next.js</span>
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">JavaScript</span>
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">Node.js</span>
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">PostgreSQL</span>
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">Html5</span>
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">css3</span>
+                        <span class="skill-tag px-4 py-2 border border-white/10 rounded-full text-sm cursor-default font-medium">Wordpress</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-32 px-6 relative z-10 bg-primary">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20">
+                <p class="text-accent uppercase tracking-widest text-sm mb-4 font-semibold">Services</p>
+                <h2 class="text-4xl md:text-6xl font-bold mb-6 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">What I Do</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto font-light">End-to-end development services focused on creating high-converting digital experiences.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="group p-8 border border-white/10 rounded-lg hover:border-accent/50 transition-all duration-300 hover:-translate-y-2 bg-secondary/20">
+                    <div class="w-14 h-14 mb-6 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Front-End Development</h3>
+                    <p class="text-gray-400 mb-6 font-light">Custom websites built with React, Next.js, and modern frameworks. Optimized for speed, SEO, and conversion.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Single Page Applications</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>E-commerce Solutions</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Progressive Web Apps</li>
+                    </ul>
+                </div>
+                <div class="group p-8 border border-white/10 rounded-lg hover:border-accent/50 transition-all duration-300 hover:-translate-y-2 bg-secondary/20">
+                    <div class="w-14 h-14 mb-6 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Backend Development</h3>
+                    <p class="text-gray-400 mb-6 font-light">Robust server-side logic and database management. Building scalable architectures and secure APIs for seamless performance.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>API Design & Integration</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Database Management</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Server-Side Security</li>
+                    </ul>
+                </div>
+                <div class="group p-8 border border-white/10 rounded-lg hover:border-accent/50 transition-all duration-300 hover:-translate-y-2 bg-secondary/20">
+                    <div class="w-14 h-14 mb-6 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Performance Optimization</h3>
+                    <p class="text-gray-400 mb-6 font-light">Speed optimization and technical SEO to improve rankings and user experience. Core Web Vitals excellence.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Speed Optimization</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Technical SEO</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Conversion Rate Optimization</li>
+                    </ul>
+                </div>
+                <div class="group p-8 border border-white/10 rounded-lg hover:border-accent/50 transition-all duration-300 hover:-translate-y-2 bg-secondary/20">
+                    <div class="w-14 h-14 mb-6 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                        <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Website Redesign</h3>
+                    <p class="text-gray-400 mb-6 font-light">Modernizing legacy platforms with fresh aesthetics and improved navigation. Breathing new life into your digital presence.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>UI/UX Modernization</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Responsive Refactoring</li>
+                        <li class="flex items-center gap-2 font-medium"><span class="w-1 h-1 bg-accent rounded-full"></span>Content Restructuring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Selected Work Section -->
+    <section id="work" class="py-32 px-6 relative z-10 bg-primary">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-20">
+                <div>
+                    <p class="text-accent uppercase tracking-widest text-sm mb-4 font-semibold">Portfolio</p>
+                    <h2 class="text-4xl md:text-6xl font-bold tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Selected Work</h2>
+                </div>
+                <div class="line-draw mt-8 md:mt-0 md:w-64"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+
+                <!-- PROJECT 1 -->
+                <a href="https://difeco.vercel.app" target="_blank" rel="noopener" class="project-card group cursor-pointer block" data-cursor="hover">
+                    <div class="relative overflow-hidden rounded-lg mb-6 aspect-[4/3] bg-secondary">
+                        <picture>
+                            <source srcset="assets/project1.webp" type="image/webp">
+                            <img src="assets/project1.jpg" alt="Difeco Deluxe" class="project-image-img" width="800" height="600" loading="lazy" decoding="async" onerror="this.style.display='none'; this.parentElement.nextElementSibling.style.display='flex';">
+                        </picture>
+                        <div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 hidden items-center justify-center">
+                            <span class="text-gray-400 text-sm">Add Image: assets/project1.jpg</span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="px-6 py-3 border border-white text-white uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all font-semibold">View Project</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 group-hover:text-accent transition-colors tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Difeco Deluxe</h3>
+                            <p class="text-gray-400 text-sm font-light">Elegance Redefined; Men and Women Luxury Store</p>
+                        </div>
+                        <span class="text-accent text-sm font-semibold">01</span>
+                    </div>
+                </a>
+
+                <!-- PROJECT 2 -->
+                <a href="https://in-kspector.vercel.app" target="_blank" rel="noopener" class="project-card group cursor-pointer md:mt-24 block" data-cursor="hover">
+                    <div class="relative overflow-hidden rounded-lg mb-6 aspect-[4/3] bg-secondary">
+                        <picture>
+                            <source srcset="assets/project2.webp" type="image/webp">
+                            <img src="assets/project2.jpg" alt="THE INK-spector" class="project-image-img" width="800" height="600" loading="lazy" decoding="async" onerror="this.style.display='none'; this.parentElement.nextElementSibling.style.display='flex';">
+                        </picture>
+                        <div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 hidden items-center justify-center">
+                            <span class="text-gray-400 text-sm">Add Image: assets/project2.jpg</span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="px-6 py-3 border border-white text-white uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all font-semibold">View Project</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 group-hover:text-accent transition-colors tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">THE INK-spector</h3>
+                            <p class="text-gray-400 text-sm font-light">Helping experts Turn Ideas into Finished Nonfiction Books</p>
+                        </div>
+                        <span class="text-accent text-sm font-semibold">02</span>
+                    </div>
+                </a>
+
+                <!-- PROJECT 3 -->
+                <a href="https://owerri-bole.vercel.app" target="_blank" rel="noopener" class="project-card group cursor-pointer block" data-cursor="hover">
+                    <div class="relative overflow-hidden rounded-lg mb-6 aspect-[4/3] bg-secondary">
+                        <picture>
+                            <source srcset="assets/project3.webp" type="image/webp">
+                            <img src="assets/project3.jpg" alt="owerri-bole" class="project-image-img" width="800" height="600" loading="lazy" decoding="async" onerror="this.style.display='none'; this.parentElement.nextElementSibling.style.display='flex';">
+                        </picture>
+                        <div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 hidden items-center justify-center">
+                            <span class="text-gray-400 text-sm">Add Image: assets/project3.jpg</span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span class="px-6 py-3 border border-white text-white uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all font-semibold">View Project</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 group-hover:text-accent transition-colors tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">owerri-bole</h3>
+                            <p class="text-gray-400 text-sm font-light">Serving amazing local dishes providing online order placing and tracking of order delivery</p>
+                        </div>
+                        <span class="text-accent text-sm font-semibold">03</span>
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="mt-20 text-center">
+                <a href="portfolio.html" class="inline-flex items-center gap-2 text-accent hover:text-white transition-colors uppercase tracking-widest text-sm border-b border-accent hover:border-white pb-1 font-semibold">
+                    View All Projects
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <!-- <section class="py-32 px-6 bg-secondary/30 relative z-10">
+        <div class="max-w-5xl mx-auto text-center">
+            <svg class="w-16 h-16 mx-auto mb-8 text-accent/30" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+            <blockquote class="text-2xl md:text-4xl font-bold leading-relaxed mb-8 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">"Reddington transformed our outdated website into a conversion machine. Our leads increased by 150% within the first month, and the design perfectly captures our brand essence."</blockquote>
+            <div class="flex items-center justify-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center"><span class="text-accent font-bold text-lg" style="font-family: 'Space Grotesk', sans-serif;">JD</span></div>
+                <div class="text-left"><p class="font-bold tracking-tight">James Davidson</p><p class="text-gray-400 text-sm font-medium">CEO, TechStart Inc.</p></div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-32 px-6 relative overflow-hidden z-10 bg-primary">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent"></div>
+        <div class="max-w-4xl mx-auto relative z-10 text-center">
+            <p class="text-accent uppercase tracking-widest text-sm mb-4 font-semibold">Get in Touch</p>
+            <h2 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">Let's Build Something<br>Great Together</h2>
+            <p class="text-gray-400 text-lg mb-12 max-w-2xl mx-auto font-light">Have a project in mind? I'm currently available for freelance work and open to full-time opportunities.</p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+                <a href="mailto:oparahraymond72@gmail.com" class="magnetic-btn px-10 py-5 bg-accent text-primary font-bold text-lg hover:bg-white transition-colors duration-300 tracking-tight">Start a Project</a>
+                <a href="https://github.com" target="_blank" rel="noopener" class="magnetic-btn px-10 py-5 border border-white/20 hover:border-accent hover:text-accent transition-all duration-300 flex items-center gap-2 font-semibold tracking-tight">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    View GitHub
+                </a>
+            </div>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 text-gray-400 font-medium">
+                <span>Lagos, Nigeria</span>
+                <span class="hidden md:block w-1 h-1 bg-accent rounded-full"></span>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-accent transition-colors" aria-label="LinkedIn"><i class="fab fa-linkedin text-lg"></i></a>
+                    <a href="#" class="hover:text-accent transition-colors" aria-label="Twitter"><i class="fab fa-twitter text-lg"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 border-t border-white/10 relative z-10 bg-primary">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-500 text-sm font-medium">© 2026 Reddington. All rights reserved.</p>
+            <p class="text-gray-600 text-sm font-medium">Designed & Built with precision</p>
+        </div>
+    </footer>
+
+    <script defer>
+        // Preloader Animation
+        function initPreloader() {
+            const preloader = document.getElementById('preloader');
+            const preloaderText = document.getElementById('preloader-text');
+            const preloaderLine = document.getElementById('preloader-line');
+            const preloaderCounter = document.getElementById('preloader-counter');
+            const navbar = document.getElementById('navbar');
+
+            const chars = preloaderText.querySelectorAll('span');
+            let progress = 0;
+
+            // Animate text characters
+            gsap.to(chars, {
+                y: 0,
+                duration: 0.8,
+                stagger: 0.05,
+                ease: 'power4.out',
+                delay: 0.2
+            });
+
+            // Animate progress line
+            gsap.to(preloaderLine, {
+                width: '300px',
+                duration: 2,
+                ease: 'power2.inOut',
+                delay: 0.5
+            });
+
+            // Counter animation
+            const counterInterval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(counterInterval);
+                }
+                preloaderCounter.textContent = progress.toString().padStart(2, '0') + '%';
+            }, 100);
+
+            // Hide preloader and show content
+            setTimeout(() => {
+                gsap.to(preloader, {
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        preloader.classList.add('hidden');
+                        navbar.classList.add('visible');
+                        initHeroAnimations();
+                    }
+                });
+            }, 2500);
+        }
+
+        function initHeroAnimations() {
+            const heroTl = gsap.timeline();
+
+            heroTl.to('.hero-subtitle', {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power4.out'
+            })
+            .to('#hero-line1, #hero-line2, #hero-line3', {
+                y: 0,
+                duration: 1.2,
+                stagger: 0.1,
+                ease: 'power4.out'
+            }, '-=0.5')
+            .to('#hero-desc', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out'
+            }, '-=0.6')
+            .to('#hero-cta', {
+                opacity: 1,
+                scale: 1,
+                duration: 0.8,
+                ease: 'back.out(1.7)'
+            }, '-=0.4');
+        }
+
+        function initApp() {
+            if (typeof gsap !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                initPreloader();
+                initScrollAnimations();
+            }
+
+            initCursor();
+            initNavigation();
+            initMobileMenu();
+            initSmoothScroll();
+            initMagneticButtons();
+        }
+
+        function initScrollAnimations() {
+            // Line draw animation
+            gsap.to('.line-draw', {
+                width: '100%',
+                duration: 1.5,
+                ease: 'power2.inOut',
+                scrollTrigger: {
+                    trigger: '.line-draw',
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+
+            // Project cards animation
+            const projectCards = document.querySelectorAll('.project-card');
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry, index) => {
+                        if (entry.isIntersecting) {
+                            gsap.from(entry.target, {
+                                y: 100,
+                                opacity: 0,
+                                duration: 1,
+                                ease: 'power3.out',
+                                delay: index * 0.1
+                            });
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                projectCards.forEach(card => observer.observe(card));
+            }
+
+            // Parallax effect
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                gsap.utils.toArray('.parallax-bg').forEach(element => {
+                    const speed = element.dataset.speed || 0.5;
+                    gsap.to(element, {
+                        y: `${100 * speed}%`,
+                        ease: 'none',
+                        scrollTrigger: {
+                            trigger: element,
+                            start: 'top bottom',
+                            end: 'bottom top',
+                            scrub: true
+                        }
+                    });
+                });
+            }
+        }
+
+        function initCursor() {
+            if (window.innerWidth <= 768) return;
+
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+
+            let mouseX = 0, mouseY = 0;
+            let outlineX = 0, outlineY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursorDot.style.left = `${mouseX}px`;
+                cursorDot.style.top = `${mouseY}px`;
+            }, { passive: true });
+
+            function animateOutline() {
+                outlineX += (mouseX - outlineX) * 0.15;
+                outlineY += (mouseY - outlineY) * 0.15;
+                cursorOutline.style.left = `${outlineX}px`;
+                cursorOutline.style.top = `${outlineY}px`;
+                requestAnimationFrame(animateOutline);
+            }
+            animateOutline();
+
+            document.querySelectorAll('[data-cursor="hover"], a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => cursorOutline.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hover'));
+            });
+        }
+
+        function initNavigation() {
+            const navbar = document.getElementById('navbar');
+            let ticking = false;
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        if (window.pageYOffset > 50) {
+                            navbar.classList.add('scrolled');
+                        } else {
+                            navbar.classList.remove('scrolled');
+                        }
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+        }
+
+        function initMobileMenu() {
+            const menuBtn = document.getElementById('menuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const closeMenu = document.getElementById('closeMenu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+
+            function toggleMenu() {
+                const isOpen = mobileMenu.classList.contains('active');
+                menuBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+
+                if (!isOpen) {
+                    // Opening menu
+                    document.body.classList.add('menu-open');
+                    // Store scroll position
+                    document.body.dataset.scrollY = window.scrollY.toString();
+                    document.body.style.top = `-${window.scrollY}px`;
+                } else {
+                    // Closing menu
+                    document.body.classList.remove('menu-open');
+                    document.body.style.top = '';
+                    // Restore scroll position
+                    const scrollY = document.body.dataset.scrollY || '0';
+                    window.scrollTo(0, parseInt(scrollY || '0'));
+                }
+            }
+
+            menuBtn.addEventListener('click', toggleMenu);
+            closeMenu.addEventListener('click', toggleMenu);
+            mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+        }
+
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        function initMagneticButtons() {
+            if (window.matchMedia('(pointer: coarse)').matches) return;
+
+            document.querySelectorAll('.magnetic-btn').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+                });
+
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transform = 'translate(0, 0)';
+                });
+            });
+        }
+
+        // Initialize
+        if (document.fonts) {
+            document.fonts.ready.then(() => {
+                initApp();
+            });
+        } else {
+            window.addEventListener('load', initApp);
+        }
+    </script>
+</body>
+</html>
